@@ -1,0 +1,21 @@
+public enum AttriType
+{
+    HP = 1,
+    MP = 2,
+    HPRecoverValue = 3,
+    MPRecoverValue = 4,
+    HPRecoverTime = 5,
+    MPRecoverTime = 6,
+    HPMax = 7,
+    MPMax = 8,
+    Attack = 9,
+    Defence = 10,
+    Level = 11,
+    Money = 12,
+    HPMaxPoint = 13,
+    MPMaxPoint = 14,
+    AttackPoint = 15,
+    DefencePoint = 16,
+    TotalPoint = 17,
+    Count,
+}
