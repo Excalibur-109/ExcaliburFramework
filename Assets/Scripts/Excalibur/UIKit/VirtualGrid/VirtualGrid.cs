@@ -186,6 +186,7 @@ namespace Excalibur
         private VirtualSlot m_Prefab;
         [SerializeField]    /// 是否默认选择第一个（会触发其事件）
         private bool m_AutoSelect = true;
+        public bool AutoSelect { get { return m_AutoSelect; } set { m_AutoSelect = value; } }
         [SerializeField]    /// 是否使用鼠标滚轮滚动
         private bool m_UseMouseWheel = false;
         [SerializeField]    /// 显示的行(x)和列(y)。生成时会在horizontal会将y加2，vertical会将x加2
