@@ -27,7 +27,7 @@ namespace Excalibur
         /// </summary>
         PageTurning_Horizontal,
         /// <summary>
-        /// 垂直翻页滚动
+        /// 垂直翻页滚动d
         /// </summary>
         PageTurning_Vertical
     }
@@ -46,7 +46,24 @@ namespace Excalibur
         private const int DYNAMIC_ROW_COLUMN = 1;
 
         private RectTransform m_Rect;
-        internal RectTransform Rect { get { if (m_Rect == null) m_Rect = (RectTransform)transform; return m_Rect; } }
+        internal RectTransform Rect 
+        {
+            get 
+            {
+                if (m_Rect == null)
+                {
+                    m_Rect = (RectTransform)transform;
+                    if (m_Scrollable)
+                    {
+                        m_Rect.anchorMin = new Vector2(0f, 1f);
+                        m_Rect.anchorMax = new Vector2(0f, 1f);
+                        m_Rect.pivot = new Vector2(0f, 1f);
+                        m_Rect.anchoredPosition = Vector2.zero;
+                    }
+                }
+                return m_Rect; 
+            } 
+        }
 
         /// <summary>
         /// 行
@@ -100,6 +117,8 @@ namespace Excalibur
             }
         }
 
+        private bool m_Scrollable;
+
         private int countPerPage { get { return m_RowAndColumn[0] * m_RowAndColumn[1]; } }
         private int m_CurrentPage;
         private int m_LastPage;
@@ -134,7 +153,32 @@ namespace Excalibur
             get
             {
                 if (m_ScrollRect == null)
-                    m_ScrollRect = viewPort.parent.GetComponent<ScrollRect>();
+                {
+                    if (viewPort.parent != null && viewPort.parent.GetComponent<ScrollRect>())
+                    {
+                        m_ScrollRect = viewPort.parent.GetComponent<ScrollRect>();
+                        m_ScrollRect.horizontal = m_Tumble == Tumble.Tumble_Horizontal || m_Tumble == Tumble.PageTurning_Horizontal;
+                        m_ScrollRect.vertical = m_Tumble == Tumble.Tumble_Vertical || m_Tumble == Tumble.PageTurning_Vertical;
+                        m_ScrollRect.movementType = ScrollRect.MovementType.Elastic;
+                        m_ScrollRect.elasticity = 0.1f;
+                        m_ScrollRect.scrollSensitivity = 0f;
+                        if (m_UseMouseWheel && m_ScrollRect.scrollSensitivity < 50f)
+                            m_ScrollRect.scrollSensitivity = 50f;
+                        switch (m_Tumble)
+                        {
+                            case Tumble.Tumble_Horizontal:
+                            case Tumble.Tumble_Vertical:
+                                m_ScrollRect.inertia = true;
+                                m_ScrollRect.enabled = true;
+                                break;
+                            case Tumble.PageTurning_Horizontal:
+                            case Tumble.PageTurning_Vertical:
+                                m_ScrollRect.inertia = m_PageScrollEnable;
+                                m_ScrollRect.enabled = m_PageScrollEnable;
+                                break;
+                        }
+                    }
+                }
                 return m_ScrollRect;
             }
         }
@@ -142,7 +186,16 @@ namespace Excalibur
         private RectTransform m_ViewPort;
         internal RectTransform viewPort
         {
-            get { if (m_ViewPort == null) m_ViewPort = transform.parent as RectTransform; return m_ViewPort; }
+            get 
+            {
+                if (m_ViewPort == null)
+                {
+                    m_ViewPort = transform.parent as RectTransform;
+                    if (m_ViewPort == null)
+                        m_ViewPort = Rect;
+                }
+                return m_ViewPort; 
+            }
         }
 
         /// <summary>
@@ -168,6 +221,20 @@ namespace Excalibur
         private Vector2 m_SlotSize;
         internal Vector2 SlotSize { get { return m_SlotSize; } }
 
+        /// <summary>
+        /// 预选Items
+        /// </summary>
+        private List<IItemData> m_PreSelections;
+        internal List<IItemData> preSelections { get { if (m_PreSelections == null) m_PreSelections = new List<IItemData>(); return m_PreSelections; } }
+        /// <summary>
+        /// 选择的items
+        /// </summary>
+        private List<IItemData> m_Selections;
+        internal List<IItemData> selections { get { if (m_Selections == null) m_Selections = new List<IItemData>(); return m_Selections; } }
+
+        /// <summary>
+        /// 当前选组的data
+        /// </summary>
         private IItemData m_SelectedData = default(IItemData);
         public IItemData SelectedData { get { return m_SelectedData; } }
 
@@ -187,6 +254,9 @@ namespace Excalibur
         [SerializeField]    /// 是否默认选择第一个（会触发其事件）
         private bool m_AutoSelect = true;
         public bool AutoSelect { get { return m_AutoSelect; } set { m_AutoSelect = value; } }
+        [SerializeField]
+        private bool m_MultiSelect = false;
+        public bool MultiSelect { get { return m_MultiSelect; } set { m_MultiSelect = value; } }
         [SerializeField]    /// 是否使用鼠标滚轮滚动
         private bool m_UseMouseWheel = false;
         [SerializeField]    /// 显示的行(x)和列(y)。生成时会在horizontal会将y加2，vertical会将x加2
@@ -262,7 +332,7 @@ namespace Excalibur
                 m_AdsorbAfterInput = false;
             SetRectSize();
 
-            if (!(IsPageScroll && !m_PageScrollEnable))
+            if (m_Scrollable && !(IsPageScroll && !m_PageScrollEnable))
             {
                 m_PreAnchoredPosition = Rect.anchoredPosition;
                 if (IsPageScroll)
@@ -284,18 +354,44 @@ namespace Excalibur
                     m_Slots[i].DataIndex = i;
                 }
             }
-            else
+            else if (m_Scrollable)
             {
                 m_PageCount = Mathf.CeilToInt((float)m_Datas.Count / countPerPage);
                 m_CurrentPage = 0;
                 m_LastPage = -1;
                 SetPageScroll();
             }
-
-            m_SelectedData = default(IItemData);
-            if (m_AutoSelect && m_Datas.Count > 0 && m_Slots.Count > 0)
+            else
             {
-                m_Slots[0].Internal_OnSlotClicked();
+                if (m_Datas.Count > m_Slots.Count)
+                {
+                    for (int i = m_Datas.Count - m_Slots.Count; i < m_Datas.Count; ++i)
+                    {
+                        m_Slots.Add(Instantiate(m_Prefab, transform));
+                    }
+                }
+                for (int i = 0; i < m_Slots.Count; ++i)
+                {
+                    m_Slots[i].DataIndex = i;
+                }
+            }
+
+            if (preSelections.Count > 0)
+            {
+                for (int i = 0; i < preSelections.Count; ++i)
+                {
+                    selections.Add(preSelections[i]);
+                }
+                preSelections.Clear();
+            }
+            else
+            {
+                selections.Clear();
+                m_SelectedData = default(IItemData);
+                if (m_AutoSelect && m_Datas.Count > 0 && m_Slots.Count > 0)
+                {
+                    m_Slots[0].Internal_OnSlotClicked();
+                }
             }
         }
 
@@ -321,6 +417,30 @@ namespace Excalibur
         public void ProvideDatas(IItemData[] provider)
         {
             ProvideDatas<IItemData>(provider.ToList());
+        }
+
+        public void PreSelections<T>(List<T> selections) where T : IItemData
+        {
+            preSelections.Clear();
+            for (int i = 0; i < selections.Count; ++i)
+            {
+                preSelections.Add(selections[i]);
+            }
+        }
+
+        public void PreSelections(List<IItemData> selections)
+        {
+            PreSelections(selections);
+        }
+
+        public void PreSelection<T>(T selection) where T : IItemData
+        {
+            PreSelections(new List<T>() { selection });
+        }
+
+        public void PreSelection(IItemData selection)
+        {
+            PreSelection(selection);
         }
 
         /// <summary>
@@ -392,9 +512,14 @@ namespace Excalibur
         /// <summary>
         /// 有数据被删除时的事务
         /// </summary>
-        public void OnDeleteSelectedData()
+        public void OnDeleteCurrentSelectedData()
         {
+            //for (int i = 0; i < selections.Count; ++i)
+            //{
+            //    m_Datas.Remove(selections[i]);
+            //}
             m_Datas.Remove(SelectedData);
+            selections.Remove(SelectedData);
             m_SelectedData = default(IItemData);
 
             for (int i = 0; i < m_Slots.Count; ++i)
@@ -403,8 +528,25 @@ namespace Excalibur
             }
 
             onDeleteSelectedEvent?.Invoke();
-            onSelectEvent?.Invoke(null);
-            onCancelSelectEvent?.Invoke(null);
+
+            SetRectSize();
+        }
+
+        public void OnDeleteSelectedDatas()
+        {
+            for (int i = 0; i < selections.Count; ++i)
+            {
+                m_Datas.Remove(selections[i]);
+            }
+            selections.Clear();
+            m_SelectedData = default(IItemData);
+
+            for (int i = 0; i < m_Slots.Count; ++i)
+            {
+                m_Slots[i].ResetDirectly();
+            }
+
+            //onDeleteSelectedEvent?.Invoke();
 
             SetRectSize();
         }
@@ -476,16 +618,34 @@ namespace Excalibur
         /// <param name="slot">点击的slot</param>
         private void OnVirtualSlotClickedBase(VirtualSlot slot)
         {
-            m_SelectedData = slot.IsSelected ? default(IItemData) : slot.ItemData;
+            m_SelectedData = ReferenceEquals(m_SelectedData, slot.ItemData) ? null : slot.ItemData;
+
+            if (slot.IsSelected)
+            {
+                selections.Remove(slot.ItemData);
+            }
+            else
+            {
+                if (!m_MultiSelect)
+                    selections.Clear();
+                selections.Add(slot.ItemData);
+            }
 
             for (int i = 0; i < m_Slots.Count; ++i)
             {
-                m_Slots[i].IsSelected = false;
+                m_Slots[i].ResetDirectly();
             }
+        }
 
-            slot.IsSelected = slot.IsSelected;
-
-            return;
+        /// <summary>
+        /// slot是否被选择
+        /// </summary>
+        /// <param name="slot"></param>
+        internal bool IsSlotSelected(VirtualSlot slot)
+        {
+            if (slot.ItemData == default(IItemData))
+                return false;
+            return selections.Contains(slot.ItemData);
         }
 
         /// <summary>
@@ -504,15 +664,14 @@ namespace Excalibur
 
                 if (IsVertical)
                 {
-                    float height = m_Padding.top + m_Padding.bottom + 
-                                   ((SlotSize[1] + m_Spacing.y) * m_RowAndColumn[0]) * m_PageCount;
+                    float height = m_ViewPort.rect.height * m_PageCount;
 
                     Rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
                 }
                 else
                 {
-                    float width = m_Padding.left + m_Padding.right +
-                                  ((SlotSize[0] + m_Spacing.x) * m_RowAndColumn[1]) * m_PageCount;
+                    float width = m_ViewPort.rect.width * m_PageCount;
+
                     Rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
                 }
             }
@@ -546,7 +705,10 @@ namespace Excalibur
             float slotHeight = m_Prefab.Height;
             if (IsVertical)
             {
-                ScrollRect.verticalNormalizedPosition = 1f;
+                if (ScrollRect != null)
+                {
+                    ScrollRect.verticalNormalizedPosition = 1f;
+                }
 
                 for (int i = 0; i < Row; ++i)
                 {
@@ -561,7 +723,10 @@ namespace Excalibur
             }
             else
             {
-                ScrollRect.horizontalNormalizedPosition = 0f;
+                if (ScrollRect != null)
+                {
+                    ScrollRect.horizontalNormalizedPosition = 0f;
+                }
 
                 for (int i = 0; i < Column; ++i)
                 {
@@ -583,6 +748,8 @@ namespace Excalibur
         {
             if (!m_Initialized)
             {
+                m_Scrollable = ScrollRect != null;
+
                 if (m_Prefab == null)
                     m_Prefab = transform.GetComponentInChildren<VirtualSlot>();
 
@@ -598,11 +765,10 @@ namespace Excalibur
                 }
 
                 m_SlotSize = new Vector2(m_Prefab.Rect.rect.width, m_Prefab.Rect.rect.height);
-
                 LayoutGroup layoutGroup = GetComponent<LayoutGroup>();
                 if (layoutGroup != null)
                 {
-                    layoutGroup.enabled = false;
+                    layoutGroup.enabled = !m_Scrollable;
                     if (layoutGroup is GridLayoutGroup gridGroup)
                     {
                         m_Spacing = gridGroup.spacing;
@@ -653,15 +819,21 @@ namespace Excalibur
                 {
                     case Tumble.Tumble_Horizontal:
                     case Tumble.Tumble_Vertical:
-                        ScrollRect.inertia = true;
-                        ScrollRect.enabled = true;
+                        if (ScrollRect != null)
+                        {
+                            ScrollRect.inertia = true;
+                            ScrollRect.enabled = true;
+                        }
                         break;
                     case Tumble.PageTurning_Horizontal:
                     case Tumble.PageTurning_Vertical:
                         m_CurrentAutoScrollIntervalTime = m_AutoScrollInterval;
                         m_LastPage = -1;
                         m_PrePageScrollPosition = new Vector2(float.PositiveInfinity, float.PositiveInfinity);
-                        ScrollRect.inertia = false;
+                        if (ScrollRect != null)
+                        {
+                            ScrollRect.inertia = false;
+                        }
                         m_ScrollRect.enabled = m_PageScrollEnable;
                         break;
                 }
@@ -675,6 +847,11 @@ namespace Excalibur
         /// </summary>
         private void BuildOnScroll()
         {
+            if (!m_Scrollable)
+            {
+                return;
+            }
+
             int i; 
             float prepos, currentpos;
             VirtualSlot slot;
@@ -835,6 +1012,9 @@ namespace Excalibur
         {
             if (m_PageScrollEnable)
             {
+                if (!m_Scrollable)
+                    return;
+
                 if ((Input.GetMouseButtonDown(0) || Input.mouseScrollDelta != Vector2.zero)
                     && RectTransformUtility.RectangleContainsScreenPoint(viewPort, Input.mousePosition))
                 {
@@ -986,7 +1166,7 @@ namespace Excalibur
         /// </summary>
         private void SetPageScroll()
         {
-            if (!pageScrollEnable)
+            if (!pageScrollEnable || !m_Scrollable)
                 return;
 
             if (m_CurrentAutoScrollIntervalTime != m_AutoScrollInterval)

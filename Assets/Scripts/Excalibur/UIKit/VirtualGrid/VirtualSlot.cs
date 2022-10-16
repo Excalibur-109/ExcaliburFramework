@@ -29,9 +29,9 @@ namespace Excalibur
 		private GameObject m_Select;
 
         public bool IsSelected 
-		{ 
+		{
 			// get 获取是否选中
-			get { return VirtualGrid.SelectedData != default(IItemData) && ReferenceEquals(ItemData, VirtualGrid.SelectedData); }
+			get { return m_VirtualGrid.IsSlotSelected(this); }//{ return VirtualGrid.SelectedData != default(IItemData) && ReferenceEquals(ItemData, VirtualGrid.SelectedData); }
 			// set 设置选中效果
 			set 
 			{
