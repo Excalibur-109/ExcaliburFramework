@@ -14,6 +14,7 @@ namespace Excalibur
         SerializedProperty m_Prefab;
         SerializedProperty m_RolAndColumn;
         SerializedProperty m_AutoSelect;
+        SerializedProperty m_MultiSelect;
         SerializedProperty m_UseMouseWheel;
         SerializedProperty m_PreButton;
         SerializedProperty m_NextButton;
@@ -26,7 +27,6 @@ namespace Excalibur
         SerializedProperty m_AutoScrollSpeed;
 
         VirtualGrid m_TargetGrid;
-        ScrollRect m_ScrollRect;
 
         LayoutGroup m_LayoutGroup;
         RectOffset m_Offset;
@@ -47,6 +47,7 @@ namespace Excalibur
             m_Prefab = serializedObject.FindProperty("m_Prefab");
             m_RolAndColumn = serializedObject.FindProperty("m_RowAndColumn");
             m_AutoSelect = serializedObject.FindProperty("m_AutoSelect");
+            m_MultiSelect = serializedObject.FindProperty("m_MultiSelect");
             m_UseMouseWheel = serializedObject.FindProperty("m_UseMouseWheel");
             m_PreButton = serializedObject.FindProperty("m_PreButton");
             m_NextButton = serializedObject.FindProperty("m_NextButton");
@@ -58,16 +59,14 @@ namespace Excalibur
             m_AutoScrollInterval = serializedObject.FindProperty("m_AutoScrollInterval");
             m_AutoScrollSpeed = serializedObject.FindProperty("m_AutoScrollSpeed");
 
-            m_ScrollRect = m_TargetGrid.transform.parent.parent.GetComponent<ScrollRect>();
-
-            if (!EditorApplication.isPlaying)
-            {
-                RectTransform rect = m_TargetGrid.transform as RectTransform;
-                RectTransform parentRect = m_TargetGrid.transform.parent as RectTransform;
-                rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, parentRect.rect.width);
-                rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, parentRect.rect.height);
-                rect.anchoredPosition = Vector2.zero;
-            }
+            //if (!EditorApplication.isPlaying)
+            //{
+            //    RectTransform rect = m_TargetGrid.transform as RectTransform;
+            //    RectTransform parentRect = m_TargetGrid.transform.parent as RectTransform;
+            //    rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, parentRect.rect.width);
+            //    rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, parentRect.rect.height);
+            //    rect.anchoredPosition = Vector2.zero;
+            //}
 
             gridGroupBtnTip = new GUIContent("Grid");
             horizontalGroupBtnTip = new GUIContent("Horizontal");
@@ -86,7 +85,8 @@ namespace Excalibur
             m_IsVirtual.boolValue = true;
             EditorGUILayout.PropertyField(m_Tumble);
             EditorGUILayout.PropertyField(m_Prefab);
-            EditorGUILayout.PropertyField(m_AutoSelect);
+            EditorGUILayout.PropertyField(m_AutoSelect); 
+            EditorGUILayout.PropertyField(m_MultiSelect);
             EditorGUILayout.PropertyField(m_UseMouseWheel);
             if (m_IsVirtual.boolValue)
             {
@@ -186,45 +186,10 @@ namespace Excalibur
                 EditorGUILayout.EndHorizontal();
             }
 
-            if (m_ScrollRect == null)
+            if (!m_IsVirtual.boolValue)
             {
-                m_ScrollRect = m_TargetGrid.transform.parent.parent.gameObject.AddComponent<ScrollRect>();
+                m_PageScrollEnable.boolValue = true;
             }
-            switch ((Tumble)m_Tumble.enumValueIndex)
-            {
-                case Tumble.Tumble_Horizontal:
-                case Tumble.PageTurning_Horizontal:
-                    m_ScrollRect.horizontal = true;
-                    m_ScrollRect.vertical = false;
-                    break;
-                case Tumble.Tumble_Vertical:
-                case Tumble.PageTurning_Vertical:
-                    m_ScrollRect.horizontal = false;
-                    m_ScrollRect.vertical = true;
-                    break;
-            }
-            m_ScrollRect.movementType = ScrollRect.MovementType.Elastic;
-            m_ScrollRect.elasticity = 0.1f;
-            if (m_ScrollRect.scrollSensitivity < 50f)
-                m_ScrollRect.scrollSensitivity = 50f;
-
-            if ((Tumble)m_Tumble.enumValueIndex == Tumble.Tumble_Horizontal ||
-                (Tumble)m_Tumble.enumValueIndex == Tumble.Tumble_Vertical)
-            {
-                m_ScrollRect.inertia = true;
-                m_ScrollRect.enabled = true;
-                if (!m_IsVirtual.boolValue)
-                {
-                    m_PageScrollEnable.boolValue = true;
-                }
-            }
-            else
-            {
-                m_ScrollRect.inertia = false;
-                m_ScrollRect.enabled = m_PageScrollEnable.boolValue;
-            }
-            if (!m_UseMouseWheel.boolValue)
-                m_ScrollRect.scrollSensitivity = 0f;
 
             m_ContentFitter = m_TargetGrid.GetComponent<ContentSizeFitter>();
             if (m_IsVirtual.boolValue)
