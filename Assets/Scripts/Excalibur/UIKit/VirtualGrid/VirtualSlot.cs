@@ -4,22 +4,6 @@ using UnityEngine.EventSystems;
 
 namespace Excalibur
 {
-	public enum VirtualSlotEffectType
-	{
-		None,
-		PointerEnterEnlarge,
-		PointerEnterBreathe,
-		PointerEnterSpring,
-		PointerEnterShake
-	}
-
-	public enum VirtualSlotOnScrollEffectType
-	{
-		None,
-		Fade,
-		Scale
-	}
-
 	[RequireComponent(typeof(Image))]
     [RequireComponent(typeof(RectTransform))]
     public abstract class VirtualSlot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
@@ -69,18 +53,6 @@ namespace Excalibur
 			get { return virtualGrid.Internal_GetItemData(m_DataIndex); }
 		}
 
-        private VirtualSlotEffectType m_PointerEnterEffectType;
-		public VirtualSlotEffectType PointerEnterEffectType 
-		{
-			get { return m_PointerEnterEffectType; } set { m_PointerEnterEffectType = value; } 
-		}
-
-        private VirtualSlotEffectType m_OnScrllEffectType;
-        public VirtualSlotEffectType OnScrllEffectType 
-		{
-			get { return m_OnScrllEffectType; } set { m_OnScrllEffectType = value; } 
-		}
-
         private RectTransform m_RectTransform;
 		public RectTransform Rect
 		{
@@ -89,8 +61,8 @@ namespace Excalibur
 
 		public Vector2 AnchoredPosition { get { return Rect.anchoredPosition; } }
 
-		public float Width { get { return virtualGrid.SlotSize[0]; } }
-		public float Height { get { return virtualGrid.SlotSize[1]; } }
+		public float Width { get { return virtualGrid.slotSize[0]; } }
+		public float Height { get { return virtualGrid.slotSize[1]; } }
 
 		private Vector3[] m_Corners;
 		public Vector3[] Corners
@@ -104,7 +76,7 @@ namespace Excalibur
 			}
 		}
 
-        private Vector3[] ViewPortWorldCorners { get { return virtualGrid.ViewPortWorldCorners; } }
+        private Vector3[] ViewPortWorldCorners { get { return virtualGrid.viewPortWorldCorners; } }
 		private int m_DataIndex;
 		internal int DataIndex 
 		{
@@ -203,6 +175,10 @@ namespace Excalibur
 			{
 				return;
 			}
+
+			if (eventData.button != PointerEventData.InputButton.Left)
+				return;
+
 			Internal_OnSlotClicked();
         }
 
@@ -238,7 +214,7 @@ namespace Excalibur
         internal bool Internal_AboveViewPort()
 		{
 			Vector3[] corners = Corners;
-			if (virtualGrid.IsVertical)
+			if (virtualGrid.isVertical)
 			{
 				if (corners[0].y > ViewPortWorldCorners[1].y)
 				{
@@ -259,7 +235,7 @@ namespace Excalibur
         internal bool Internal_BelowViewPort()
         {
             Vector3[] corners = Corners;
-            if (virtualGrid.IsVertical)
+            if (virtualGrid.isVertical)
             {
                 if (corners[1].y < ViewPortWorldCorners[0].y)
                 {
@@ -283,7 +259,7 @@ namespace Excalibur
         internal bool Internal_PartInViewPort()
         {
             Vector3[] corners = Corners;
-            if (virtualGrid.IsVertical)
+            if (virtualGrid.isVertical)
             {
                 if ((corners[1].y >= ViewPortWorldCorners[0].y && corners[0].y < ViewPortWorldCorners[0].y)
                  || (corners[0].y <= ViewPortWorldCorners[1].y && corners[1].y > ViewPortWorldCorners[1].y))

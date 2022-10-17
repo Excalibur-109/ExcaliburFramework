@@ -47,7 +47,7 @@ public class TestGrid : MonoBehaviour
     {
         if (slot != null && slot.IsSelected)
         {
-            text.text = (gird.SelectedData as TestSlotData).id.ToString();
+            text.text = (gird.selectedData as TestSlotData).id.ToString();
             text2.text = (slot.ItemData as TestSlotData).id.ToString();
         }
         else
@@ -78,9 +78,9 @@ public class TestGrid : MonoBehaviour
         if (!CanOperate())
             return;
 
-        if (gird.SelectedData != null)
+        if (gird.selectedData != null)
         {
-            TestSlotData data = gird.SelectedData as TestSlotData;
+            TestSlotData data = gird.selectedData as TestSlotData;
             list.Remove(data);
             gird.OnDeleteCurrentSelectedData();
         }
@@ -91,9 +91,9 @@ public class TestGrid : MonoBehaviour
         if (!CanOperate())
             return;
 
-        if (gird.SelectedData != null)
+        if (gird.selectedData != null)
         {
-            ++(gird.SelectedData as TestSlotData).id;
+            ++(gird.selectedData as TestSlotData).id;
             gird.OnRefreshSelectedData();
         }
     }
@@ -103,9 +103,9 @@ public class TestGrid : MonoBehaviour
         if (!CanOperate())
             return;
 
-        if (gird.SelectedData != null)
+        if (gird.selectedData != null)
         {
-            TestSlotData data = gird.SelectedData as TestSlotData;
+            TestSlotData data = gird.selectedData as TestSlotData;
             --data.id;
             if (data.id == 0)
             {
