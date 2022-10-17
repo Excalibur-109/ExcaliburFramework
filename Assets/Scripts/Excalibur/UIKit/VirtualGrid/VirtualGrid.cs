@@ -365,7 +365,8 @@ namespace Excalibur
             {
                 if (m_Datas.Count > m_Slots.Count)
                 {
-                    for (int i = m_Datas.Count - m_Slots.Count; i < m_Datas.Count; ++i)
+                    int diverseCtn = m_Datas.Count - m_Slots.Count;
+                    for (int i = 0; i < diverseCtn; ++i)
                     {
                         m_Slots.Add(Instantiate(m_Prefab, transform));
                     }
