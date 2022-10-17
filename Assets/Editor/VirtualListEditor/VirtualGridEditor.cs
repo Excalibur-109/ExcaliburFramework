@@ -11,6 +11,8 @@ namespace Excalibur
     {
         SerializedProperty m_IsVirtual;
         SerializedProperty m_Tumble;
+        SerializedProperty m_ScrollRect;
+        SerializedProperty m_ViewPort;
         SerializedProperty m_Prefab;
         SerializedProperty m_RolAndColumn;
         SerializedProperty m_AutoSelect;
@@ -28,6 +30,7 @@ namespace Excalibur
 
         VirtualGrid m_TargetGrid;
 
+        Tumble m_SelectTumble;
         LayoutGroup m_LayoutGroup;
         RectOffset m_Offset;
         ContentSizeFitter m_ContentFitter;
@@ -44,6 +47,8 @@ namespace Excalibur
             m_TargetGrid = target as VirtualGrid;
             m_IsVirtual = serializedObject.FindProperty("m_IsVirtual");
             m_Tumble = serializedObject.FindProperty("m_Tumble");
+            m_ScrollRect = serializedObject.FindProperty("m_ScrollRect");
+            m_ViewPort = serializedObject.FindProperty("m_ViewPort");
             m_Prefab = serializedObject.FindProperty("m_Prefab");
             m_RolAndColumn = serializedObject.FindProperty("m_RowAndColumn");
             m_AutoSelect = serializedObject.FindProperty("m_AutoSelect");
@@ -59,14 +64,7 @@ namespace Excalibur
             m_AutoScrollInterval = serializedObject.FindProperty("m_AutoScrollInterval");
             m_AutoScrollSpeed = serializedObject.FindProperty("m_AutoScrollSpeed");
 
-            //if (!EditorApplication.isPlaying)
-            //{
-            //    RectTransform rect = m_TargetGrid.transform as RectTransform;
-            //    RectTransform parentRect = m_TargetGrid.transform.parent as RectTransform;
-            //    rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, parentRect.rect.width);
-            //    rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, parentRect.rect.height);
-            //    rect.anchoredPosition = Vector2.zero;
-            //}
+            m_IsVirtual.boolValue = true;
 
             gridGroupBtnTip = new GUIContent("Grid");
             horizontalGroupBtnTip = new GUIContent("Horizontal");
@@ -81,14 +79,21 @@ namespace Excalibur
 		public override void OnInspectorGUI()
         {
             serializedObject.Update();
-            // EditorGUILayout.PropertyField(m_IsVirtual);
-            m_IsVirtual.boolValue = true;
             EditorGUILayout.PropertyField(m_Tumble);
+            m_SelectTumble = (Tumble)m_Tumble.enumValueIndex;
+            if (m_SelectTumble != Tumble.No_Tumble)
+            {
+                EditorGUILayout.PropertyField(m_ScrollRect);
+                EditorGUILayout.PropertyField(m_ViewPort);
+            }
             EditorGUILayout.PropertyField(m_Prefab);
             EditorGUILayout.PropertyField(m_AutoSelect); 
             EditorGUILayout.PropertyField(m_MultiSelect);
-            EditorGUILayout.PropertyField(m_UseMouseWheel);
-            if (m_IsVirtual.boolValue)
+            if (m_SelectTumble != Tumble.No_Tumble)
+            {
+                EditorGUILayout.PropertyField(m_UseMouseWheel);
+            }
+            if (m_IsVirtual.boolValue && m_SelectTumble != Tumble.No_Tumble)
             {
                 EditorGUILayout.PropertyField(m_RolAndColumn);
             }
@@ -186,13 +191,8 @@ namespace Excalibur
                 EditorGUILayout.EndHorizontal();
             }
 
-            if (!m_IsVirtual.boolValue)
-            {
-                m_PageScrollEnable.boolValue = true;
-            }
-
             m_ContentFitter = m_TargetGrid.GetComponent<ContentSizeFitter>();
-            if (m_IsVirtual.boolValue)
+            if (m_IsVirtual.boolValue && m_SelectTumble != Tumble.No_Tumble)
             {
                 DestroyImmediate(m_ContentFitter);
             }
