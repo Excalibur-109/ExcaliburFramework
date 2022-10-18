@@ -284,6 +284,17 @@ namespace Excalibur
                 m_AdsorbAfterInput = false;
             CalculateRectSize();
 
+            selections.Clear();
+            if (preSelections.Count > 0)
+            {
+                for (int i = 0; i < preSelections.Count; ++i)
+                {
+                    selections.Add(preSelections[i]);
+                }
+                preSelections.Clear();
+            }
+            m_SelectedData = selections.Count > 0 ? selections[0] : default(UIItemData);
+
             if (m_Scrollable && !(isPageScroll && !m_PageScrollEnable))
             {
                 m_PreAnchoredPosition = rect.anchoredPosition;
@@ -315,7 +326,9 @@ namespace Excalibur
                     int diverseCtn = m_Datas.Count - m_Slots.Count;
                     for (int i = 0; i < diverseCtn; ++i)
                     {
-                        m_Slots.Add(ExcalbiurFactory.MonoBehaviourProducer(m_Prefab, transform));
+                        VirtualSlot slot = Instantiate(m_Prefab, transform);
+                        slot.name = m_Prefab.name;
+                        m_Slots.Add(slot);
                     }
                 }
                 for (int i = 0; i < m_Slots.Count; ++i)
@@ -324,22 +337,9 @@ namespace Excalibur
                 }
             }
 
-            selections.Clear();
-            if (preSelections.Count > 0)
+            if (m_AutoSelect && m_Datas.Count > 0 && m_Slots.Count > 0)
             {
-                for (int i = 0; i < preSelections.Count; ++i)
-                {
-                    selections.Add(preSelections[i]);
-                }
-                preSelections.Clear();
-            }
-            else
-            {
-                m_SelectedData = default(IItemData);
-                if (m_AutoSelect && m_Datas.Count > 0 && m_Slots.Count > 0)
-                {
-                    m_Slots[0].Internal_OnSlotClicked();
-                }
+                m_Slots[0].Internal_OnSlotClicked();
             }
         }
 
