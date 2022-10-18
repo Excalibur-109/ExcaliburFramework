@@ -293,7 +293,7 @@ namespace Excalibur
                 }
                 preSelections.Clear();
             }
-            m_SelectedData = selections.Count > 0 ? selections[0] : default(UIItemData);
+            m_SelectedData = selections.Count > 0 ? selections[0] : default(IItemData);
 
             if (m_Scrollable && !(isPageScroll && !m_PageScrollEnable))
             {
