@@ -8,31 +8,31 @@ using System;
 
 namespace Excalibur
 {
-    public delegate void OnSelect(VirtualSlot selectedSlot);    // slotµã»÷µÄÎ¯ÍĞ£¬Ñ¡Ôñ¡¢È¡ÏûÑ¡Ôñ¶¼»á´¥·¢
-    public delegate void OnAddItem(List<IItemData> provider);   // ĞÂÔöÊı¾İÊ±µÄÎ¯ÍĞ
-    public delegate void OnRefreshSelectData();                 // Ë¢ĞÂÑ¡ÔñµÄslotµÄÎ¯ÍĞ
-    public delegate void OnDeleteSelectedData();                // slotÖĞÊı¾İ±»É¾³ıµÄÎ¯ÍĞ
+    public delegate void OnSelect(VirtualSlot selectedSlot);    // slotç‚¹å‡»çš„å§”æ‰˜ï¼Œé€‰æ‹©ã€å–æ¶ˆé€‰æ‹©éƒ½ä¼šè§¦å‘
+    public delegate void OnAddItem(List<IItemData> provider);   // æ–°å¢æ•°æ®æ—¶çš„å§”æ‰˜
+    public delegate void OnRefreshSelectData();                 // åˆ·æ–°é€‰æ‹©çš„slotçš„å§”æ‰˜
+    public delegate void OnDeleteSelectedData();                // slotä¸­æ•°æ®è¢«åˆ é™¤çš„å§”æ‰˜
 
     public enum Tumble
     {
         /// <summary>
-        /// ÎŞĞ§¹û
+        /// æ— æ•ˆæœ
         /// </summary>
         No_Tumble,
         /// <summary>
-        /// Ë®Æ½¹ö¶¯
+        /// æ°´å¹³æ»šåŠ¨
         /// </summary>
         Tumble_Horizontal,
         /// <summary>
-        /// ´¹Ö±¹ö¶¯
+        /// å‚ç›´æ»šåŠ¨
         /// </summary>
         Tumble_Vertical,
         /// <summary>
-        /// Ë®Æ½·­Ò³¹ö¶¯
+        /// æ°´å¹³ç¿»é¡µæ»šåŠ¨
         /// </summary>
         PageTurning_Horizontal,
         /// <summary>
-        /// ´¹Ö±·­Ò³¹ö¶¯d
+        /// å‚ç›´ç¿»é¡µæ»šåŠ¨d
         /// </summary>
         PageTurning_Vertical
     }
@@ -63,7 +63,7 @@ namespace Excalibur
         internal RectTransform rect { get { return m_Rect; } }
 
         /// <summary>
-        /// ĞĞ
+        /// è¡Œ
         /// </summary>
         private int m_Row = 0;
         private int row
@@ -89,7 +89,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÁĞ
+        /// åˆ—
         /// </summary>
         private int m_Column = 0;
         private int column
@@ -136,11 +136,11 @@ namespace Excalibur
         private bool isPageScroll { get { return m_Tumble == Tumble.PageTurning_Horizontal || m_Tumble == Tumble.PageTurning_Vertical; } }
 
         /// <summary>
-        /// ÉÏÏÂ×óÓÒ¼ä¸ô
+        /// ä¸Šä¸‹å·¦å³é—´éš”
         /// </summary>
         private RectOffset m_Padding;
         /// <summary>
-        /// slotµÄ¾àÀë
+        /// slotçš„è·ç¦»
         /// </summary>
         private Vector2 m_Spacing;
 
@@ -153,41 +153,38 @@ namespace Excalibur
         internal RectTransform viewPort { get { return m_ViewPort; } }
 
         /// <summary>
-        /// ÊÓ¿ÚÊÀ½ç×ø±ê
+        /// è§†å£ä¸–ç•Œåæ ‡
         /// </summary>
         private Vector3[] m_ViewPortWorldCorners;
         internal Vector3[] viewPortWorldCorners
         {
             get
             {
-                if (m_ViewPortWorldCorners == null)
-                {
-                    m_ViewPortWorldCorners = new Vector3[4];
-                    viewPort.GetWorldCorners(m_ViewPortWorldCorners);
-                }
+                m_ViewPortWorldCorners = new Vector3[4];
+                viewPort.GetWorldCorners(m_ViewPortWorldCorners);
                 return m_ViewPortWorldCorners;
             }
         }
 
         /// <summary>
-        /// slotµÄ³ß´ç
+        /// slotçš„å°ºå¯¸
         /// </summary>
         private Vector2 m_SlotSize;
         internal Vector2 slotSize { get { return m_SlotSize; } }
 
         /// <summary>
-        /// Ô¤Ñ¡Items
+        /// é¢„é€‰Items
         /// </summary>
         private List<IItemData> m_PreSelections;
         internal List<IItemData> preSelections { get { if (m_PreSelections == null) m_PreSelections = new List<IItemData>(); return m_PreSelections; } }
         /// <summary>
-        /// Ñ¡ÔñµÄitems
+        /// é€‰æ‹©çš„items
         /// </summary>
         private List<IItemData> m_Selections;
         internal List<IItemData> selections { get { if (m_Selections == null) m_Selections = new List<IItemData>(); return m_Selections; } }
 
         /// <summary>
-        /// µ±Ç°Ñ¡×éµÄdata
+        /// å½“å‰é€‰ç»„çš„data
         /// </summary>
         private IItemData m_SelectedData = default(IItemData);
         public IItemData selectedData { get { return m_SelectedData; } }
@@ -201,9 +198,9 @@ namespace Excalibur
 
         [SerializeField]
         private bool m_IsVirtual = true;
-        [SerializeField]    /// ¹ö¶¯ÀàĞÍ
+        [SerializeField]    /// æ»šåŠ¨ç±»å‹
         private Tumble m_Tumble = Tumble.Tumble_Vertical;
-        [SerializeField]    /// Ô¤ÖÆÌå
+        [SerializeField]    /// é¢„åˆ¶ä½“
         private VirtualSlot m_Prefab;
         private List<FadeType> m_FadeTypes;
         internal List<FadeType> fadeTypes { get { if (m_FadeTypes == null) m_FadeTypes = new List<FadeType>(); return m_FadeTypes; } }
@@ -213,35 +210,35 @@ namespace Excalibur
         [Range(0f, 90f)]
         private float m_MaxRotateAngle = 60f;
         internal float rotateAngle { get { return m_MaxRotateAngle; } }
-        [SerializeField]    /// ÊÇ·ñÄ¬ÈÏÑ¡ÔñµÚÒ»¸ö£¨»á´¥·¢ÆäÊÂ¼ş£©
+        [SerializeField]    /// æ˜¯å¦é»˜è®¤é€‰æ‹©ç¬¬ä¸€ä¸ªï¼ˆä¼šè§¦å‘å…¶äº‹ä»¶ï¼‰
         private bool m_AutoSelect = true;
         public bool autoSelect { get { return m_AutoSelect; } set { m_AutoSelect = value; } }
         [SerializeField]
         private bool m_MultiSelect = false;
         public bool multiSelect { get { return m_MultiSelect; } set { m_MultiSelect = value; } }
-        [SerializeField]    /// ÊÇ·ñÊ¹ÓÃÊó±ê¹öÂÖ¹ö¶¯
+        [SerializeField]    /// æ˜¯å¦ä½¿ç”¨é¼ æ ‡æ»šè½®æ»šåŠ¨
         private bool m_UseMouseWheel = false;
-        [SerializeField]    /// ÏÔÊ¾µÄĞĞ(x)ºÍÁĞ(y)¡£Éú³ÉÊ±»áÔÚhorizontal»á½«y¼Ó2£¬vertical»á½«x¼Ó2
+        [SerializeField]    /// æ˜¾ç¤ºçš„è¡Œ(x)å’Œåˆ—(y)ã€‚ç”Ÿæˆæ—¶ä¼šåœ¨horizontalä¼šå°†yåŠ 2ï¼Œverticalä¼šå°†xåŠ 2
         private Vector2Int m_RowAndColumn;
-        [SerializeField]    /// ÉÏÒ»Ò³°´Å¥
+        [SerializeField]    /// ä¸Šä¸€é¡µæŒ‰é’®
         private Button m_PreButton;
-        [SerializeField]    /// ÏÂÒ»Ò³°´Å¥
+        [SerializeField]    /// ä¸‹ä¸€é¡µæŒ‰é’®
         private Button m_NextButton;
-        [SerializeField]    /// uGuiµÄÎÄ±¾¿ò
+        [SerializeField]    /// uGuiçš„æ–‡æœ¬æ¡†
         private Text   m_PageText;
-        [SerializeField]    /// TMPµÄÎÄ±¾¿ò
+        [SerializeField]    /// TMPçš„æ–‡æœ¬æ¡†
         private TextMeshProUGUI   m_PageTextTMP;
-        [SerializeField]    /// ÏÔÊ¾Ò³ÂëÎÄ±¾Ê±ÊÇ·ñÏÔÊ¾×ÜÒ³Êı
+        [SerializeField]    /// æ˜¾ç¤ºé¡µç æ–‡æœ¬æ—¶æ˜¯å¦æ˜¾ç¤ºæ€»é¡µæ•°
         private bool m_ShowPageCount = true;
-        [SerializeField]    /// ·­Ò³¹ö¶¯ÊÇ·ñÏÔÊ¾¹ö¶¯Ğ§¹û¡£false»á°´ÕÕĞĞºÍÁĞµÄÔ­ÓĞÊı¾İÉú³É¹Ì¶¨ÊıÁ¿µÄslot
+        [SerializeField]    /// ç¿»é¡µæ»šåŠ¨æ˜¯å¦æ˜¾ç¤ºæ»šåŠ¨æ•ˆæœã€‚falseä¼šæŒ‰ç…§è¡Œå’Œåˆ—çš„åŸæœ‰æ•°æ®ç”Ÿæˆå›ºå®šæ•°é‡çš„slot
         private bool m_PageScrollEnable = true;
-        [SerializeField]    /// ÔÚÃ»ÓĞÍÏ×§ºÍÊó±ê¹öÂÖ¹ö¶¯µÄÊ±ºò£¬ÊÇ·ñ×Ô¶¯¹ö¶¯
+        [SerializeField]    /// åœ¨æ²¡æœ‰æ‹–æ‹½å’Œé¼ æ ‡æ»šè½®æ»šåŠ¨çš„æ—¶å€™ï¼Œæ˜¯å¦è‡ªåŠ¨æ»šåŠ¨
         private bool m_AutoScroll = false;
         [SerializeField]
-        [Range(0.1f, 10f)]  /// ×Ô¶¯¹ö¶¯µÄÊ±¼ä¼ä¸ô
+        [Range(0.1f, 10f)]  /// è‡ªåŠ¨æ»šåŠ¨çš„æ—¶é—´é—´éš”
         private float m_AutoScrollInterval = 3f;
         [SerializeField]
-        [Range(50f, 2000f)]  /// ×Ô¶¯¹ö¶¯µÄËÙ¶È
+        [Range(50f, 2000f)]  /// è‡ªåŠ¨æ»šåŠ¨çš„é€Ÿåº¦
         private float m_AutoScrollSpeed = 500f;
 
         private void Awake()
@@ -271,7 +268,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÏÔÊ¾Êı¾İ
+        /// æ˜¾ç¤ºæ•°æ®
         /// </summary>
         public void ProvideDatas<T>(List<T> provider) where T : IItemData
         {
@@ -327,6 +324,7 @@ namespace Excalibur
                 }
             }
 
+            selections.Clear();
             if (preSelections.Count > 0)
             {
                 for (int i = 0; i < preSelections.Count; ++i)
@@ -337,7 +335,6 @@ namespace Excalibur
             }
             else
             {
-                selections.Clear();
                 m_SelectedData = default(IItemData);
                 if (m_AutoSelect && m_Datas.Count > 0 && m_Slots.Count > 0)
                 {
@@ -347,7 +344,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÏÔÊ¾Êı¾İ
+        /// æ˜¾ç¤ºæ•°æ®
         /// </summary>
         public void ProvideDatas(List<IItemData> provider)
         {
@@ -355,7 +352,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÏÔÊ¾Êı¾İ
+        /// æ˜¾ç¤ºæ•°æ®
         /// </summary>
         public void ProvideDatas<T>(T[] provider) where T : IItemData
         {
@@ -363,7 +360,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÏÔÊ¾Êı¾İ
+        /// æ˜¾ç¤ºæ•°æ®
         /// </summary>
         public void ProvideDatas(IItemData[] provider)
         {
@@ -395,18 +392,18 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÁĞ±íĞÂÔö¶à¸öitem
+        /// åˆ—è¡¨æ–°å¢å¤šä¸ªitem
         /// </summary>
-        /// <param name="item">Ôö¼ÓµÄitemÁĞ±í</param>
+        /// <param name="item">å¢åŠ çš„itemåˆ—è¡¨</param>
         public void OnAddItem(List<IItemData> provider)
         {
             OnAddItem<IItemData>(provider);
         }
 
         /// <summary>
-        /// ÁĞ±íĞÂÔö¶à¸öitem
+        /// åˆ—è¡¨æ–°å¢å¤šä¸ªitem
         /// </summary>
-        /// <param name="item">Ôö¼ÓµÄitemÁĞ±í</param>
+        /// <param name="item">å¢åŠ çš„itemåˆ—è¡¨</param>
         public void OnAddItem<T>(List<T> provider) where T : IItemData
         {
             List<IItemData> allNewItems = new List<IItemData>();
@@ -435,18 +432,18 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÁĞ±íĞÂÔöµ¥¸öitem
+        /// åˆ—è¡¨æ–°å¢å•ä¸ªitem
         /// </summary>
-        /// <param name="item">Ôö¼ÓµÄitem</param>
+        /// <param name="item">å¢åŠ çš„item</param>
         public void OnAddItem(IItemData item)
         {
             OnAddItem(item);
         }
 
         /// <summary>
-        /// ÁĞ±íĞÂÔöµ¥¸öitem
+        /// åˆ—è¡¨æ–°å¢å•ä¸ªitem
         /// </summary>
-        /// <param name="item">Ôö¼ÓµÄitem</param>
+        /// <param name="item">å¢åŠ çš„item</param>
         public void OnAddItem<T>(T item) where T : IItemData
         {
             List<IItemData> allNewItems = new List<IItemData>() { item };
@@ -454,7 +451,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÓĞÊı¾İ¸Ä±äÊ±µÄÊÂÎñ
+        /// æœ‰æ•°æ®æ”¹å˜æ—¶çš„äº‹åŠ¡
         /// </summary>
         public void OnRefreshSelectedData()
         {
@@ -466,7 +463,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÓĞÊı¾İ±»É¾³ıÊ±µÄÊÂÎñ
+        /// æœ‰æ•°æ®è¢«åˆ é™¤æ—¶çš„äº‹åŠ¡
         /// </summary>
         public void OnDeleteCurrentSelectedData()
         {
@@ -508,7 +505,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// slotÍ¨¹ıindex»ñÈ¡Êı¾İ
+        /// sloté€šè¿‡indexè·å–æ•°æ®
         /// </summary>
         internal IItemData Internal_GetItemData(int index)
         {
@@ -520,7 +517,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// slotÍ¨¹ıindex»ñÈ¡Êı¾İ
+        /// sloté€šè¿‡indexè·å–æ•°æ®
         /// </summary>
         internal T Internal_GetItemData<T>(int index) where T : IItemData
         {
@@ -532,9 +529,9 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÅĞ¶Ïslot´æµÄË÷ÒıÊÇ·ñÓĞĞ§
+        /// åˆ¤æ–­slotå­˜çš„ç´¢å¼•æ˜¯å¦æœ‰æ•ˆ
         /// </summary>
-        /// <param name="index">slotÀïÃæ´æµÄË÷Òı</param>
+        /// <param name="index">sloté‡Œé¢å­˜çš„ç´¢å¼•</param>
         /// <returns></returns>
         internal bool Internal_IndexValid(int index)
         {
@@ -542,9 +539,9 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// slotµã»÷µÄÊÂÎñ
+        /// slotç‚¹å‡»çš„äº‹åŠ¡
         /// </summary>
-        /// <param name="slot">µã»÷µÄslot</param>
+        /// <param name="slot">ç‚¹å‡»çš„slot</param>
         internal void OnVirtualSlotClicked(VirtualSlot slot)
         {
             OnVirtualSlotClickedBase(slot);
@@ -569,9 +566,9 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// slotµã»÷ÉèÖÃÑ¡ÔñĞ§¹ûµÄÊÂ¼ş£¬ÉèÖÃÑ¡ÔñÊı¾İ
+        /// slotç‚¹å‡»è®¾ç½®é€‰æ‹©æ•ˆæœçš„äº‹ä»¶ï¼Œè®¾ç½®é€‰æ‹©æ•°æ®
         /// </summary>
-        /// <param name="slot">µã»÷µÄslot</param>
+        /// <param name="slot">ç‚¹å‡»çš„slot</param>
         private void OnVirtualSlotClickedBase(VirtualSlot slot)
         {
             if (slot.IsSelected)
@@ -600,7 +597,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// slotÊÇ·ñ±»Ñ¡Ôñ
+        /// slotæ˜¯å¦è¢«é€‰æ‹©
         /// </summary>
         /// <param name="slot"></param>
         internal bool IsSlotSelected(VirtualSlot slot)
@@ -614,7 +611,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÉèÖÃcontentµÄ¿í¸ß¡£Èç¹ûÊ±·­Ò³¹ö¶¯£¬»áÉèÖÃÒ³ÊıºÍÎ»ÖÃ
+        /// è®¾ç½®contentçš„å®½é«˜ã€‚å¦‚æœæ—¶ç¿»é¡µæ»šåŠ¨ï¼Œä¼šè®¾ç½®é¡µæ•°å’Œä½ç½®
         /// </summary>
         private void CalculateRectSize()
         {
@@ -661,7 +658,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// °ÑËùÓĞslotÖØÖÃµ½×î¿ªÊ¼µÄÎ»ÖÃ
+        /// æŠŠæ‰€æœ‰sloté‡ç½®åˆ°æœ€å¼€å§‹çš„ä½ç½®
         /// </summary>
         private void ResetPosition()
         {
@@ -713,7 +710,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// µÚÒ»´Î´´½¨Ê±µÄÊÂÎñ
+        /// ç¬¬ä¸€æ¬¡åˆ›å»ºæ—¶çš„äº‹åŠ¡
         /// </summary>
         private void OnInitialized()
         {
@@ -769,7 +766,7 @@ namespace Excalibur
 
                 if (m_Prefab == null)
                 {
-                    Debug.LogError("Virtual Grid Î´Ìí¼ÓÔ¤ÖÆÌå");
+                    Debug.LogError("Virtual Grid æœªæ·»åŠ é¢„åˆ¶ä½“");
                 }
 
                 if (m_Prefab != null && m_Prefab.gameObject.activeSelf)
@@ -865,7 +862,7 @@ namespace Excalibur
         }
 
         /// summary>
-        /// ¹ö¶¯Ê±¶¯Ì¬ÉèÖÃslotµÄÎ»ÖÃ
+        /// æ»šåŠ¨æ—¶åŠ¨æ€è®¾ç½®slotçš„ä½ç½®
         /// </summary>
         private void BuildOnScroll()
         {
@@ -884,12 +881,12 @@ namespace Excalibur
             VirtualSlot slot;
             if (isVertical)
             {
-                // ´¹Ö±»¬¶¯ÉÏ±ßÎªabove£¬ ÏÂ±ßÎªbelow
+                // å‚ç›´æ»‘åŠ¨ä¸Šè¾¹ä¸ºaboveï¼Œ ä¸‹è¾¹ä¸ºbelow
                 prepos = m_PreAnchoredPosition.y;
                 currentpos = rect.anchoredPosition.y;
                 if (prepos < currentpos)
                 {
-                    // ÏòÉÏ
+                    // å‘ä¸Š
                     for (i = 0; i < m_Slots.Count; ++i)
                     {
                         m_Current = m_Slots[i];
@@ -904,7 +901,7 @@ namespace Excalibur
                 }
                 else if (prepos > currentpos)
                 {
-                    // ÏòÏÂ
+                    // å‘ä¸‹
                     for (i = 0; i < m_Slots.Count; ++i)
                     {
                         m_Current = m_Slots[i];
@@ -920,12 +917,12 @@ namespace Excalibur
             }
             else if (isHorizontal)
             {
-                // Ë®Æ½»¬¶¯£¬×ó±ßÎªabove£¬ÓÒ±ßÎªbelow
+                // æ°´å¹³æ»‘åŠ¨ï¼Œå·¦è¾¹ä¸ºaboveï¼Œå³è¾¹ä¸ºbelow
                 prepos = m_PreAnchoredPosition.x;
                 currentpos = rect.anchoredPosition.x;
                 if (prepos < currentpos)
                 {
-                    //ÏòÓÒ
+                    //å‘å³
                     for (i = 0; i < m_Slots.Count; ++i)
                     {
                         m_Current = m_Slots[i];
@@ -940,7 +937,7 @@ namespace Excalibur
                 }
                 else if (prepos > currentpos)
                 {
-                    //Ïò×ó
+                    //å‘å·¦
                     for (i = 0; i < m_Slots.Count; ++i)
                     {
                         m_Current = m_Slots[i];
@@ -959,9 +956,9 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÕÒ³öviewPortÊÓ¿ÚÍâÉÏÃæµÄslot£¬vertical topÎªÉÏ£¬horizontal leftÎªÉÏ
+        /// æ‰¾å‡ºviewPortè§†å£å¤–ä¸Šé¢çš„slotï¼Œvertical topä¸ºä¸Šï¼Œhorizontal leftä¸ºä¸Š
         /// </summary>
-        /// <param name="slot">ÊÓ¿ÚÉÏÃæµÄslot</param>
+        /// <param name="slot">è§†å£ä¸Šé¢çš„slot</param>
         /// <returns></returns>
         private VirtualSlot SeekOutTopSlot(VirtualSlot slot)
         {
@@ -996,9 +993,9 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÕÒ³öviewPortÊÓ¿ÚÍâÏÂÃæµÄslot£¬vertical buttomÎªÏÂ£¬horizontal rightÎªÏÂ
+        /// æ‰¾å‡ºviewPortè§†å£å¤–ä¸‹é¢çš„slotï¼Œvertical buttomä¸ºä¸‹ï¼Œhorizontal rightä¸ºä¸‹
         /// </summary>
-        /// <param name="slot">ÊÓ¿ÚÏÂÃæµÄslot</param>
+        /// <param name="slot">è§†å£ä¸‹é¢çš„slot</param>
         /// <returns></returns>
         private VirtualSlot SeekOutButtomSlot(VirtualSlot slot)
         {
@@ -1033,7 +1030,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ·­Ò³¹ö¹ö¶¯
+        /// ç¿»é¡µæ»šæ»šåŠ¨
         /// </summary>
         private void PageScrollAffair()
         {
@@ -1138,7 +1135,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÉÏÒ»Ò³£¬ÉÏÒ»Ò³°´Å¥¼àÌıµÄÊÂ¼ş
+        /// ä¸Šä¸€é¡µï¼Œä¸Šä¸€é¡µæŒ‰é’®ç›‘å¬çš„äº‹ä»¶
         /// </summary>
         private void OnScrollToPreviousPage()
         {
@@ -1158,7 +1155,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÏÂÒ»Ò³£¬ÏÂÒ»Ò³°´Å¥¼àÌıµÄÊÂ¼ş
+        /// ä¸‹ä¸€é¡µï¼Œä¸‹ä¸€é¡µæŒ‰é’®ç›‘å¬çš„äº‹ä»¶
         /// </summary>
         private void OnScrollToNextPage()
         {
@@ -1178,7 +1175,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ×Ô¶¯¹ö¶¯
+        /// è‡ªåŠ¨æ»šåŠ¨
         /// </summary>
         private void AutoPageScroll()
         {
@@ -1194,7 +1191,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ¹ö¶¯Ò³Ãæ
+        /// æ»šåŠ¨é¡µé¢
         /// </summary>
         private void SetPageScroll()
         {
@@ -1224,7 +1221,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ÏÔÊ¾Ò³Âëµ½ÎÄ±¾
+        /// æ˜¾ç¤ºé¡µç åˆ°æ–‡æœ¬
         /// </summary>
         private void SetPageText()
         {
@@ -1269,7 +1266,7 @@ namespace Excalibur
         }
 
         /// <summary>
-        /// ¼ÆËãÒ³ÂëË÷Òı
+        /// è®¡ç®—é¡µç ç´¢å¼•
         /// </summary>
         private void CalculatePageOnScroll()
         {
