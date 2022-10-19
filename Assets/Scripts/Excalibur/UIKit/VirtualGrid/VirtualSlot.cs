@@ -8,12 +8,12 @@ namespace Excalibur
     [RequireComponent(typeof(RectTransform))]
     public abstract class VirtualSlot : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 	{
-		[SerializeField]
-		private GameObject m_Select;
-        private bool interactable = true;
-
         [SerializeField]
         private VirtualGrid m_VirtualGrid;
+	[SerializeField]
+	private GameObject m_Select;
+        private bool interactable = true;
+
         internal VirtualGrid virtualGrid
         {
             get
@@ -28,9 +28,9 @@ namespace Excalibur
 
         public bool IsSelected 
 		{
-			// get »ñÈ¡ÊÇ·ñÑ¡ÖĞ
+			// get è·å–æ˜¯å¦é€‰ä¸­
 			get { return virtualGrid.IsSlotSelected(this); }
-			// set ÉèÖÃÑ¡ÖĞĞ§¹û
+			// set è®¾ç½®é€‰ä¸­æ•ˆæœ
 			set 
 			{
                 SetSelectedActive(value);
@@ -38,7 +38,7 @@ namespace Excalibur
 		}
 
 		/// <summary>
-		/// ÏÔÊ¾Òş²ØÑ¡ÖĞĞ§¹ûImage
+		/// æ˜¾ç¤ºéšè—é€‰ä¸­æ•ˆæœImage
 		/// </summary>
 		public void SetSelectedActive(bool active)
         {
@@ -113,15 +113,15 @@ namespace Excalibur
 		public void Reset() { OnRefresh(); }
 
 		/// <summary>
-		/// ÖØÖÃ¸ÃslotµÄÊı¾İ
+		/// é‡ç½®è¯¥slotçš„æ•°æ®
 		/// </summary>
 		public void ResetDirectly() { DataIndex = m_DataIndex; }
 
         protected abstract void OnRefresh();
 
 		/// <summary>
-		/// ÔÚ×ÓÀà±ØĞëÊµÏÖµÄOnRefreshÖĞ»ñÈ¡Êı¾İ
-		/// Ö»ÒªÄÜ¹»µ÷ÓÃResetÊı¾İ¾ÍÒ»¶¨²»Îª¿Õ¡£Êı¾İÎª¿ÕÖ±½Ó×ö²»ÏÔÊ¾´¦Àí
+		/// åœ¨å­ç±»å¿…é¡»å®ç°çš„OnRefreshä¸­è·å–æ•°æ®
+		/// åªè¦èƒ½å¤Ÿè°ƒç”¨Resetæ•°æ®å°±ä¸€å®šä¸ä¸ºç©ºã€‚æ•°æ®ä¸ºç©ºç›´æ¥åšä¸æ˜¾ç¤ºå¤„ç†
 		/// </summary>
         protected T GetItemData<T>() where T : IItemData
 		{
@@ -129,7 +129,7 @@ namespace Excalibur
 		}
 
 		/// <summary>
-		/// Êó±êµã»÷ÊÂ¼ş
+		/// é¼ æ ‡ç‚¹å‡»äº‹ä»¶
 		/// </summary>
 		internal void Internal_OnSlotClicked()
         {
@@ -146,7 +146,7 @@ namespace Excalibur
         }
 
 		/// <summary>
-		/// ¼Ì³ĞÀàÊó±êµã»÷µÄÊÂ¼şÖØĞ´´Ë·½·¨£¬²»ÖØĞ´¿ÉÒÔÍ¨¹ıgridÖĞÑ¡ÔñÊÂ¼şÌí¼ÓÊÂÎñÀ´´¥·¢
+		/// ç»§æ‰¿ç±»é¼ æ ‡ç‚¹å‡»çš„äº‹ä»¶é‡å†™æ­¤æ–¹æ³•ï¼Œä¸é‡å†™å¯ä»¥é€šè¿‡gridä¸­é€‰æ‹©äº‹ä»¶æ·»åŠ äº‹åŠ¡æ¥è§¦å‘
 		/// </summary>
 		protected virtual void OnClickedHandler()
 		{
@@ -154,7 +154,7 @@ namespace Excalibur
 		}
 
 		/// <summary>
-		/// Ñ¡ÖĞÊ±´¥·¢µÄÊÂ¼ş
+		/// é€‰ä¸­æ—¶è§¦å‘çš„äº‹ä»¶
 		/// </summary>
 		protected virtual void OnSelectedHandler()
 		{
@@ -162,7 +162,7 @@ namespace Excalibur
 		}
 
 		/// <summary>
-		/// È¡ÏûÑ¡ÔñÊ±´¥·¢µÄÊÂ¼ş
+		/// å–æ¶ˆé€‰æ‹©æ—¶è§¦å‘çš„äº‹ä»¶
 		/// </summary>
 		protected virtual void OnCancelSelectedHandler()
 		{
@@ -191,7 +191,7 @@ namespace Excalibur
         }
 
 		/// <summary>
-		/// ÏÔÊ¾Òş²Øslot
+		/// æ˜¾ç¤ºéšè—slot
 		/// </summary>
         internal void Internal_SetActive(bool active)
 		{
@@ -203,14 +203,14 @@ namespace Excalibur
         }
 
 		/// <summary>
-		/// ÉèÖÃÎ»ÖÃ
+		/// è®¾ç½®ä½ç½®
 		/// </summary>
         internal void Internal_SetPosition(Vector2 position)
 		{
 			Rect.anchoredPosition = position;
 		}
 
-        /// ÊÇ·ñÔÚÊÓ¿ÚÉÏÃæ£¬ÉÏ¡¢×óÎªabove
+        /// æ˜¯å¦åœ¨è§†å£ä¸Šé¢ï¼Œä¸Šã€å·¦ä¸ºabove
         internal bool Internal_AboveViewPort()
 		{
 			Vector3[] corners = Corners;
@@ -231,7 +231,7 @@ namespace Excalibur
             return false;
 		}
 
-        /// ÊÇ·ñÔÚÊÓ¿ÚÏÂÃæ£¬ÏÂ¡¢ÓÒÎªbelow
+        /// æ˜¯å¦åœ¨è§†å£ä¸‹é¢ï¼Œä¸‹ã€å³ä¸ºbelow
         internal bool Internal_BelowViewPort()
         {
             Vector3[] corners = Corners;
@@ -253,7 +253,7 @@ namespace Excalibur
         }
 
 		/// <summary>
-		/// ²¿·ÖÔÚÊÓ¿ÚÄÚ
+		/// éƒ¨åˆ†åœ¨è§†å£å†…
 		/// </summary>
 		/// <returns></returns>
         internal bool Internal_PartInViewPort()
@@ -279,7 +279,7 @@ namespace Excalibur
         }
 
 		/// <summary>
-		/// ÉèÖÃÖĞĞÄµã¡¢Ãªµã¡¢³ß´ç
+		/// è®¾ç½®ä¸­å¿ƒç‚¹ã€é”šç‚¹ã€å°ºå¯¸
 		/// </summary>
 		internal void Internal_SetPivotAnchorSize()
 		{
@@ -290,7 +290,7 @@ namespace Excalibur
         }
 
 		/// <summary>
-		/// ÉèÖÃ°´Å¥ÊÇ·ñ¿Éµã»÷
+		/// è®¾ç½®æŒ‰é’®æ˜¯å¦å¯ç‚¹å‡»
 		/// </summary>
 		protected void SetInteractable(bool interactable)
 		{
