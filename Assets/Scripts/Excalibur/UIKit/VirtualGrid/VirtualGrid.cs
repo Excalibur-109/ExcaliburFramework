@@ -210,6 +210,9 @@ namespace Excalibur
         [Range(0f, 90f)]
         private float m_MaxRotateAngle = 60f;
         internal float rotateAngle { get { return m_MaxRotateAngle; } }
+        [SerializeField]
+        private bool m_Selectable = true;
+        public bool Selectable { get { return m_Selectable; } set { m_Selectable = value; } }
         [SerializeField]    /// 是否默认选择第一个（会触发其事件）
         private bool m_AutoSelect = true;
         public bool autoSelect { get { return m_AutoSelect; } set { m_AutoSelect = value; } }
