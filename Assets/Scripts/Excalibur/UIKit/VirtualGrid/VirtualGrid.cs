@@ -733,7 +733,6 @@ namespace Excalibur
                 m_Scrollable = scrollRect != null;
                 if (m_ScrollRect != null)
                 {
-                    m_ScrollRect = viewPort.parent.GetComponent<ScrollRect>();
                     m_ScrollRect.horizontal = m_Tumble == Tumble.Tumble_Horizontal || m_Tumble == Tumble.PageTurning_Horizontal;
                     m_ScrollRect.vertical = m_Tumble == Tumble.Tumble_Vertical || m_Tumble == Tumble.PageTurning_Vertical;
                     m_ScrollRect.movementType = ScrollRect.MovementType.Elastic;
