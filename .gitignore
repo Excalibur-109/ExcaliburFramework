@@ -2,3 +2,10 @@ Library
 Logs
 Temp
 obj
+Excalibur.sln
+Unity.AssetBundleBrowser.Editor.csproj
+.vs
+.vsconfig
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+Assembly-CSharp-firstpass.csproj
