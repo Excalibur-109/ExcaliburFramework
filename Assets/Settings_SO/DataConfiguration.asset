@@ -13,15 +13,9 @@ MonoBehaviour:
   m_Name: DataConfiguration
   m_EditorClassIdentifier: 
   importedExcels:
-  - filename: test.xlsx
-    filepath: C:/Users/Administrator/Desktop/New folder/test.xlsx
-  - filename: test1.xlsx
-    filepath: C:/Users/Administrator/Desktop/New folder/test1.xlsx
   - filename: 
     filepath: 
-  serializeExcels:
-  - test
-  - test1
+  serializeExcels: []
   createDataHandlerScript: 1
   createDataScript: 0
   IP: input ip
